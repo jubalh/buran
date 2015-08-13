@@ -7,18 +7,18 @@
 #include <QDebug>
 #include <QProcess>
 #include <QFileInfo>
-//#include <QStandardPaths>
+#include <QStandardPaths>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
-    bool configFileExists;
+    bool configFileExists = true;
     ui->setupUi(this);
 
-    //TODO xdg/appname and under osx and windows seperate folder
-    settingsFilename = QApplication::applicationDirPath() + "/settings.ini";
-    qDebug() << "Config path" + QApplication::applicationDirPath() + "/settings.ini";
+    QString settingsFilename = QStandardPaths::standardLocations(QStandardPaths::ConfigLocation)[0]
+            + "/" + qApp->applicationName() + "/settings.ini";
+    qDebug() << "Config path " + settingsFilename;
 
     QFileInfo fileinfo(settingsFilename);
     if(!(fileinfo.exists() && fileinfo.isFile()))
@@ -56,9 +56,8 @@ void MainWindow::showConfig()
 
 void MainWindow::readSshConfig()
 {
-    //QFile sshConfigFile(QStandardPaths::HomeLocation + ".ssh/ssh_config");
-    //TODO
-    QFile sshConfigFile("/home/michael/.ssh/config");
+    QString s = QStandardPaths::standardLocations(QStandardPaths::HomeLocation)[0] + "/.ssh/config";
+    QFile sshConfigFile(s);
     if(!sshConfigFile.open(QIODevice::ReadOnly| QIODevice::Text)) {
         QMessageBox::information(0, "error", sshConfigFile.errorString());
     }
@@ -70,7 +69,6 @@ void MainWindow::readSshConfig()
         QRegExp rx("^(#?)[ \\t]*([^ \\t=]+)[ \\t=]+(.*)$");
         rx.indexIn(line);
 
-        //TODO test?
         QString tmp = rx.cap(0);
         if (tmp != "" && tmp.trimmed().at(0) == '#')
            continue;
@@ -80,7 +78,7 @@ void MainWindow::readSshConfig()
 
         //TODO: ignore some.. *, ignorelist
         if(QString::compare(first, "Host", Qt::CaseSensitive) == 0)
-            servers.append(second);
+            m_servers.append(second);
     }
 }
 
@@ -92,10 +90,10 @@ void MainWindow::buildMenu()
     QAction *openConfigureAction = new QAction(tr("&Configure"), this);
     connect(openConfigureAction, SIGNAL(triggered()), this, SLOT(showConfig()));
 
-    trayIcon = new QSystemTrayIcon(this);
+    m_trayIcon = new QSystemTrayIcon(this);
     trayIconMenu = new QMenu(this);
 
-    for (QVector<QString>::iterator i = servers.begin(); i != servers.end(); i++)
+    for (QVector<QString>::iterator i = m_servers.begin(); i != m_servers.end(); i++)
     {
         QAction *connectAction = new QAction((*i), this);
         connectAction->setProperty("name", *i);
@@ -107,9 +105,9 @@ void MainWindow::buildMenu()
     trayIconMenu->addAction(openConfigureAction);
     trayIconMenu->addAction(quitAction);
 
-    trayIcon->setIcon(QIcon(":/images/logo.png"));
-    trayIcon->setContextMenu(trayIconMenu);
-    trayIcon->setVisible(true);
+    m_trayIcon->setIcon(QIcon(":/images/logo.png"));
+    m_trayIcon->setContextMenu(trayIconMenu);
+    m_trayIcon->setVisible(true);
 }
 
 void MainWindow::startSsh()

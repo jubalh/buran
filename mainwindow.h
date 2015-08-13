@@ -26,10 +26,9 @@ private slots:
 
 private:
     Ui::MainWindow *ui;
-    QSystemTrayIcon *trayIcon;
-    QVector<QString> servers;
+    QSystemTrayIcon *m_trayIcon;
+    QVector<QString> m_servers;
     QMenu *trayIconMenu;
-    QString settingsFilename;
     QSettings *m_settings;
     void readSshConfig();
     void buildMenu();
