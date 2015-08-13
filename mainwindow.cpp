@@ -101,6 +101,8 @@ void MainWindow::buildMenu()
         connect(connectAction, SIGNAL(triggered()), this, SLOT(startSsh()));
     }
 
+    QAction *a = trayIconMenu->actionAt(QPoint(1,0));
+
     trayIconMenu->addSeparator();
     trayIconMenu->addAction(openConfigureAction);
     trayIconMenu->addAction(quitAction);
