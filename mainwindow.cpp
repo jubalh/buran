@@ -93,10 +93,10 @@ void MainWindow::buildMenu()
     m_trayIcon = new QSystemTrayIcon(this);
     trayIconMenu = new QMenu(this);
 
-    for (QVector<QString>::iterator i = m_servers.begin(); i != m_servers.end(); i++)
+    for (QString server:m_servers)
     {
-        QAction *connectAction = new QAction((*i), this);
-        connectAction->setProperty("name", *i);
+        QAction *connectAction = new QAction((server), this);
+        connectAction->setProperty("name", server);
         trayIconMenu->addAction(connectAction);
         connect(connectAction, SIGNAL(triggered()), this, SLOT(startSsh()));
     }
