@@ -24,3 +24,9 @@ FORMS    += mainwindow.ui \
 
 RESOURCES += \
     res.qrc
+
+mac: binaries.path = /usr/local/bin
+else: binaries.path = /usr/bin
+binaries.files = buran
+
+INSTALLS += binaries
