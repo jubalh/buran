@@ -82,6 +82,38 @@ void MainWindow::readSshConfig()
     }
 }
 
+void MainWindow::findOrAddMenuItem(QMenu *menu, const QList<QString> &titles, const QString &hostname)
+{
+   const QString &menu_entry = titles.first();
+   QList<QAction*> actions = menu->actions();
+   QAction *current_ac = nullptr;
+
+   for (QAction *ac : actions) {
+      if (ac->text() == menu_entry) {
+         current_ac = ac;
+         break;
+      }
+   }
+
+   if (current_ac == nullptr) {
+      current_ac = menu->addAction(menu_entry);
+   }
+
+   if (titles.size() > 1) {
+      QMenu *submenu = current_ac->menu();
+      if (submenu == nullptr) {
+         submenu = new QMenu();
+         current_ac->setMenu(submenu);
+      }
+      findOrAddMenuItem(submenu, titles.mid(1), hostname);
+   }
+   else
+   {
+      current_ac->setProperty("name", hostname);
+      connect(current_ac, &QAction::triggered, this, &MainWindow::startSsh);
+   }
+}
+
 void MainWindow::buildMenu()
 {
     QAction *quitAction = new QAction(tr("&Quit"), this);
@@ -95,13 +127,27 @@ void MainWindow::buildMenu()
 
     for (QString server:m_servers)
     {
-        QAction *connectAction = new QAction((server), this);
-        connectAction->setProperty("name", server);
-        trayIconMenu->addAction(connectAction);
-        connect(connectAction, SIGNAL(triggered()), this, SLOT(startSsh()));
-    }
+        QAction *connectAction = new QAction(this);
 
-    QAction *a = trayIconMenu->actionAt(QPoint(1,0));
+        if (server.contains("/"))
+        {
+           QStringList splitted = server.split("/");
+           QMenu *menu = connectAction->menu();
+           if (menu == nullptr) {
+              menu = new QMenu();
+           }
+           connectAction->setText(splitted.first());
+           connectAction->setMenu(menu);
+
+           findOrAddMenuItem(menu, splitted.mid(1), server);
+           trayIconMenu->addMenu(menu);
+        } else {
+           connectAction->setText(server);
+           connectAction->setProperty("name", server);
+           trayIconMenu->addAction(connectAction);
+           connect(connectAction, &QAction::triggered, this, &MainWindow::startSsh);
+        }
+    }
 
     trayIconMenu->addSeparator();
     trayIconMenu->addAction(openConfigureAction);

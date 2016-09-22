@@ -32,6 +32,7 @@ private:
     QSettings *m_settings;
     void readSshConfig();
     void buildMenu();
+    void findOrAddMenuItem(QMenu *menu, const QList<QString> &titles, const QString &hostname);
 };
 
 #endif // MAINWINDOW_H
