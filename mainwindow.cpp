@@ -2,6 +2,7 @@
 #include "ui_mainwindow.h"
 #include "configurationdialog.h"
 #include <QFile>
+#include <QDir>
 #include <QTextStream>
 #include <QMessageBox>
 #include <QDebug>
@@ -16,9 +17,16 @@ MainWindow::MainWindow(QWidget *parent) :
     bool configFileExists = true;
     ui->setupUi(this);
 
-    QString settingsFilename = QStandardPaths::standardLocations(QStandardPaths::ConfigLocation)[0]
-            + "/" + qApp->applicationName() + "/settings.ini";
+    QString settingsLocation = QStandardPaths::standardLocations(QStandardPaths::ConfigLocation)[0]
+            + "/" + qApp->applicationName();
+    QString settingsFilename = settingsLocation + "/settings.ini";
     qDebug() << "Config path " + settingsFilename;
+
+    QDir root = QDir::root();
+    if (!root.mkpath(settingsLocation))
+    {
+        qDebug() << "Could not create config directory " << settingsLocation;
+    }
 
     QFileInfo fileinfo(settingsFilename);
     if(!(fileinfo.exists() && fileinfo.isFile()))
