@@ -12,22 +12,22 @@ TARGET = buran
 TEMPLATE = app
 
 
-SOURCES += main.cpp\
-        mainwindow.cpp \
-    configurationdialog.cpp
+SOURCES += src/main.cpp\
+        src/mainwindow.cpp \
+    src/configurationdialog.cpp
 
-HEADERS  += mainwindow.h \
-    configurationdialog.h
+HEADERS  += src/mainwindow.h \
+    src/configurationdialog.h
 
-FORMS    += mainwindow.ui \
-    configurationdialog.ui
+FORMS    += src/mainwindow.ui \
+    src/configurationdialog.ui
 
 RESOURCES += \
-    res.qrc
+    resources/res.qrc
 
 mac {
     binaries.path = /usr/local/bin
-    QMAKE_INFO_PLIST = Info.plist
+    QMAKE_INFO_PLIST = mac/Info.plist
 } else {
     binaries.path = /usr/bin	
 }
