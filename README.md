@@ -9,6 +9,24 @@ It has *less* features than Shuttle:
 - just one setting can be made in the config file: which terminal should be used to run ssh
 - It get's all information regarding your connection from your ssh config doesn't use any other files
 
+## Installation
+
+Make sure you have `qt` installed. If not use `brew install qt`.
+
+First clone the repository using :
+
+`git clone https://github.com/jubalh/buran.git`
+
+Next build the `buran` app by typing these in the terminal:
+
+`qmake buran.pro`
+
+and then,
+
+`make`
+
+If everything went correct you should be having `buran.app` in the cloned folder.
+
 ## Customization
 
 buran will parse your `~/.ssh/config` file for hosts.
